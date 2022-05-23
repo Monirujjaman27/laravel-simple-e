@@ -12,31 +12,14 @@ class FrontendController extends Controller
     //    index page
     public function index()
     {
-        $allPost = post::select([
-            'title',
-            'slug',
-            'image',
-            'description',
-            'category_id',
-            'user_id',
-            'created_at'
-        ])->orderBy('created_at', 'DESC')->paginate(9);
-        $headerPost = post::select([
-
-            'title',
-            'slug',
-            'image',
-            'description',
-            'category_id',
-            'user_id',
-            'created_at'
-        ])->with('user', 'tags', 'category')->orderBy('created_at', 'DESC')->take(5)->get();
+        $allPost = post::orderBy('id', 'desc')->paginate(9);
+        $headerPost = post::orderBy('id', 'desc')->take(5)->get();
 
         $firstPost  = $headerPost->splice(0, 2);
         $middlePost = $headerPost->splice(0, 1);
         $lastPost   = $headerPost->splice(0);
 
-        $footerpost = Post::orderBy('created_at', 'DESC')->take(5)->get();
+        $footerpost = Post::orderBy('id', 'DESC')->take(5)->get();
         $footerFirstPost  = $footerpost->splice(0, 1);
         $footerMiddlePost = $footerpost->splice(0, 2);
         $footerLastPost   = $footerpost->splice(0, 1);
