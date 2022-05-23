@@ -1,0 +1,14 @@
+
+#postContent .card .card-header {
+	position: relative !important;
+
+}
+
+#postContent .card .card-header.catdtitle::after {
+	position: absolute;
+	content: "";
+	background: black;
+	width: 4px;
+	height: 20px;
+	left: 0;
+}
