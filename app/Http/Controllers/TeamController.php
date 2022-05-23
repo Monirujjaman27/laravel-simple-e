@@ -35,7 +35,6 @@ class TeamController extends Controller
      */
     public function store(Request $request)
     {
-        $validate;
     }
 
     /**

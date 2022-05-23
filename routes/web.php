@@ -51,7 +51,7 @@ Route::get('/post/{slug}', [FrontendController::class, 'post'])->name('website.p
 // Backend Routes start
 
 route::group(['prefix' => '/admin', 'middleware' => ['auth']],  function () {
-    route::get('/', [DashboardController::class, 'index'])->name('home');
+    route::get('/dashboard', 'DashboardController@index')->name('home');
     // category
     route::resource('category', 'CategoryController');
     // tag
