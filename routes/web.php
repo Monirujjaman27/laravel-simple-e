@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FrontendController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,16 +26,16 @@ Route::get('/home', 'HomeController@index')->name('home');
 // home route
 Route::get('/', [FrontendController::class, 'index'])->name('website.index');
 // about route 
-Route::get('/about', 'FrontendController@about')->name('website.about');
+Route::get('/about', [FrontendController::class, 'about'])->name('website.about');
 // category route 
-Route::get('/category/{slug}', 'FrontendController@category')->name('website.category');
+Route::get('/category/{slug}', [FrontendController::class, 'category'])->name('website.category');
 // Tag route 
-Route::get('/tag/{slug}', 'FrontendController@tag')->name('website.tag');
+Route::get('/tag/{slug}', [FrontendController::class, 'tag'])->name('website.tag');
 // contact route 
-Route::get('/contact', 'FrontendController@contact')->name('website.contact');
-Route::post('/contact', 'ContactController@store')->name('contact.store');
+Route::get('/contact', [FrontendController::class, 'contact'])->name('website.contact');
+Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 // post route 
-Route::get('/post/{slug}', 'FrontendController@post')->name('website.post');
+Route::get('/post/{slug}', [FrontendController::class, 'post'])->name('website.post');
 
 
 
@@ -48,8 +49,8 @@ Route::get('/post/{slug}', 'FrontendController@post')->name('website.post');
 
 // Backend Routes start
 
-route::group(['prefix' => '/home', 'middleware' => ['auth']],  function () {
-    route::get('/', 'DashboardController@index')->name('home');
+route::group(['prefix' => '/admin', 'middleware' => ['auth']],  function () {
+    route::get('/', [DashboardController::class, 'index'])->name('home');
     // category
     route::resource('category', 'CategoryController');
     // tag

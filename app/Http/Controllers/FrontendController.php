@@ -6,16 +6,31 @@ use Illuminate\Http\Request;
 use App\Category;
 use App\tag;
 use App\post;
-use Session;
-use Illuminate\Support\str;
-use App\FrontendSetting;
+
 class FrontendController extends Controller
 {
-//    index page
+    //    index page
     public function index()
-    {      
-        $allPost = post::orderBy('created_at', 'DESC')->paginate(9);
-        $headerPost = post::orderBy('created_at', 'DESC')->take(5)->get();
+    {
+        $allPost = post::select([
+            'title',
+            'slug',
+            'image',
+            'description',
+            'category_id',
+            'user_id',
+            'created_at'
+        ])->orderBy('created_at', 'DESC')->paginate(9);
+        $headerPost = post::select([
+
+            'title',
+            'slug',
+            'image',
+            'description',
+            'category_id',
+            'user_id',
+            'created_at'
+        ])->with('user', 'tags', 'category')->orderBy('created_at', 'DESC')->take(5)->get();
 
         $firstPost  = $headerPost->splice(0, 2);
         $middlePost = $headerPost->splice(0, 1);
@@ -37,24 +52,20 @@ class FrontendController extends Controller
     public function category($slug)
     {
         $category = Category::where('slug', $slug)->first();
-        if($category){
+        if ($category) {
             $post = post::where('category_id', $category->id)->paginate(3);
             return view('website.category', compact(['category', 'post']));
-
-        }else return redirect()->route('website.index');
-
+        } else return redirect()->route('website.index');
     }
     // show post by tag page
     public function tag($slug)
     {
         $tags = tag::where('slug', $slug)->first();
-       
-        if($tags){
-        $post = $tags->posts()->orderBy('created_at', 'desc')->paginate(9);
-        return view('website.tag', compact(['tags', 'post']));
 
-        }else return redirect()->route('website.index');
-
+        if ($tags) {
+            $post = $tags->posts()->orderBy('created_at', 'desc')->paginate(9);
+            return view('website.tag', compact(['tags', 'post']));
+        } else return redirect()->route('website.index');
     }
 
 
@@ -62,23 +73,18 @@ class FrontendController extends Controller
     {
         return view('website.contact');
     }
-    
+
     public function post($slug)
     {
         $ppost = post::inRandomOrder()->paginate(3);
         $alltags = tag::orderBy('id', 'desc')->paginate(100);
-        $post = post::with('category', 'user', 'tags')->where('slug',$slug)->get();
+        $post = post::with('category', 'user', 'tags')->where('slug', $slug)->get();
         $allcategory = Category::orderBy('id', 'desc')->paginate(100);
         $relatedPost = post::orderBy('category_id', 'desc')->inRandomOrder()->paginate(3);
-        if($slug){
+        if ($slug) {
             return view('website.post', compact(['post', 'alltags', 'allcategory', 'ppost', 'relatedPost']));
-        }else{
+        } else {
             return redirect('/');
         }
-
     }
-
-
-
-    
 }
