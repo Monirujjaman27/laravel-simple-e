@@ -19,11 +19,18 @@ class PostController extends Controller
      */
     public function index()
     {
-        $allpost = post::orderBy('created_at', 'DESC')->paginate(20);
-        $tags = tag::orderBy('id', 'desc')->paginate(20);
-        $category = Category::orderBy('id', 'desc')->paginate(20);
-
-        return view('admin.posts.index', compact(['allpost', 'category', 'tags']));
+        $allpost = post::select([
+            'id',
+            'slug',
+            'image',
+            'title',
+            'category_id',
+            'user_id',
+            'created_at'
+        ])->with('category', 'tags', 'user')->orderBy('id', 'desc')->paginate(20);
+        // $tags = tag::orderBy('id', 'desc')->paginate(20);
+        // $category = Category::orderBy('id', 'desc')->paginate(20);
+        return view('admin.posts.index', compact('allpost'));
     }
 
 
@@ -47,8 +54,7 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-
-        $validData = $this->validate($request, [
+        $this->validate($request, [
             'title' => 'required|unique:posts,title',
             'image' => 'required',
             'description' => 'required',
@@ -110,7 +116,6 @@ class PostController extends Controller
      */
     public function update(Request $request, post $post)
     {
-
         $this->validate($request, [
             'title' => 'required|unique:posts,title,' . $post->id,
             'description' => 'required',
@@ -122,7 +127,6 @@ class PostController extends Controller
         $post->description = $request->description;
         $post->category_id = $request->category_id;
         $post->user_id     = auth()->user()->id;
-
         $post->tags()->sync($request->tags);
 
         $unlinkImgName = $post->image;

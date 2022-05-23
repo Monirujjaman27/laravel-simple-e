@@ -12,7 +12,14 @@ class FrontendController extends Controller
     //    index page
     public function index()
     {
-        $allPost = post::orderBy('id', 'desc')->paginate(9);
+        $allPost = post::select([
+            'id',
+            'slug',
+            'image',
+            'title',
+            'category_id',
+            'created_at'
+        ])->with('category', 'tags')->orderBy('id', 'desc')->paginate(9);
         $headerPost = post::orderBy('id', 'desc')->take(5)->get();
 
         $firstPost  = $headerPost->splice(0, 2);
@@ -59,13 +66,21 @@ class FrontendController extends Controller
 
     public function post($slug)
     {
-        $ppost = post::inRandomOrder()->paginate(3);
-        $alltags = tag::orderBy('id', 'desc')->paginate(100);
-        $post = post::with('category', 'user', 'tags')->where('slug', $slug)->get();
-        $allcategory = Category::orderBy('id', 'desc')->paginate(100);
-        $relatedPost = post::orderBy('category_id', 'desc')->inRandomOrder()->paginate(3);
         if ($slug) {
-            return view('website.post', compact(['post', 'alltags', 'allcategory', 'ppost', 'relatedPost']));
+            $allcategory = Category::select('id', 'name', 'slug')->paginate(5);
+            $alltags = tag::select('id', 'name', 'slug')->paginate(5);
+            $relatedPost = post::select([
+                'id',
+                'slug',
+                'title',
+                'category_id',
+                'user_id',
+                'image',
+                'created_at'
+            ])->with('category')->inRandomOrder()->paginate(3);
+            $post = post::with('category', 'tags')->where('slug', $slug)->orderBy('category_id', 'desc')->first();
+            // dd($post);
+            return view('website.post', compact(['post', 'relatedPost', 'allcategory', 'alltags']));
         } else {
             return redirect('/');
         }
