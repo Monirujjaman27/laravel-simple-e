@@ -39,7 +39,6 @@
                     <div class="small-box bg-success">
                         <div class="inner">
                             <h3>{{ $categoryCount}}</h3>
-
                             <p>Category</p>
                         </div>
                         <div class="icon">
